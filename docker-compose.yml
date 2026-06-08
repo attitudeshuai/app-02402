@@ -1,0 +1,93 @@
+services:
+  # =====================================
+  # MySQL Database
+  # =====================================
+  mysql:
+    image: mysql:8.0
+    container_name: association-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: association_db
+      MYSQL_USER: association
+      MYSQL_PASSWORD: association123
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/src/main/resources/db:/docker-entrypoint-initdb.d
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --character-set-client-handshake=FALSE
+      --init-connect='SET NAMES utf8mb4'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123456"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - association-network
+
+  # =====================================
+  # Redis Cache
+  # =====================================
+  redis:
+    image: redis:7-alpine
+    container_name: association-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - association-network
+
+  # =====================================
+  # Backend API Service
+  # =====================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: association-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/association_db?useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_unicode_ci&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: association
+      SPRING_DATASOURCE_PASSWORD: association123
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      TZ: Asia/Shanghai
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - association-network
+
+# =====================================
+# Volumes
+# =====================================
+volumes:
+  mysql_data:
+  redis_data:
+
+# =====================================
+# Networks
+# =====================================
+networks:
+  association-network:
+    driver: bridge
