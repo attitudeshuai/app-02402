@@ -10,6 +10,7 @@ import com.association.dto.PageQuery;
 import com.association.entity.Activity;
 import com.association.entity.ActivityEnrollment;
 import com.association.entity.Member;
+import com.association.mapper.ActivityCommentMapper;
 import com.association.mapper.ActivityEnrollmentMapper;
 import com.association.mapper.ActivityMapper;
 import com.association.service.ActivityService;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> implements ActivityService {
 
     private final ActivityEnrollmentMapper enrollmentMapper;
+    private final ActivityCommentMapper commentMapper;
     private final MemberService memberService;
     private final PaymentService paymentService;
 
@@ -74,8 +76,9 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         return result.convert(activity -> {
             ActivityVO vo = BeanUtil.copyProperties(activity, ActivityVO.class);
             vo.setEnrolledCount(enrollmentMapper.countByActivityId(activity.getId()));
+            vo.setCommentCount(commentMapper.countByActivityId(activity.getId()));
+            vo.setAverageRating(commentMapper.getAverageRating(activity.getId()));
             
-            // 查询当前用户的报名状态
             if (userId != null) {
                 ActivityEnrollment enrollment = getEnrollment(activity.getId(), userId);
                 if (enrollment != null) {
@@ -101,6 +104,8 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
 
         ActivityVO vo = BeanUtil.copyProperties(activity, ActivityVO.class);
         vo.setEnrolledCount(enrollmentMapper.countByActivityId(id));
+        vo.setCommentCount(commentMapper.countByActivityId(id));
+        vo.setAverageRating(commentMapper.getAverageRating(id));
 
         Long userId = UserContext.getUserId();
         if (userId != null) {
