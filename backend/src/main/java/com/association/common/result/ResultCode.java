@@ -52,6 +52,9 @@ public enum ResultCode {
     ACTIVITY_NOT_ENROLLED(1206, "未报名该活动"),
     ACTIVITY_ALREADY_CHECKED_IN(1207, "已签到"),
     ACTIVITY_CHECK_IN_NOT_ALLOWED(1208, "当前不允许签到"),
+    ACTIVITY_COMMENT_NOT_ALLOWED(1209, "活动未结束，暂不能评论"),
+    ACTIVITY_ALREADY_COMMENTED(1210, "已评论该活动，请编辑现有评论"),
+    ACTIVITY_COMMENT_NOT_FOUND(1211, "活动评论不存在"),
 
     // 财务相关 13xx
     PAYMENT_FAILED(1301, "支付失败"),

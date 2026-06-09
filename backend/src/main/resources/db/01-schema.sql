@@ -163,3 +163,24 @@ CREATE TABLE IF NOT EXISTS `biz_notice_read` (
     UNIQUE KEY `uk_notice_user` (`notice_id`, `user_id`),
     KEY `idx_user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='公告已读记录表';
+
+-- =====================================
+-- 8. 活动评论表
+-- =====================================
+CREATE TABLE IF NOT EXISTS `biz_activity_comment` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '评论ID',
+    `activity_id` BIGINT NOT NULL COMMENT '活动ID',
+    `member_id` BIGINT DEFAULT NULL COMMENT '会员ID',
+    `user_id` BIGINT NOT NULL COMMENT '用户ID',
+    `rating` TINYINT NOT NULL COMMENT '评分: 1-5星',
+    `content` VARCHAR(1000) NOT NULL COMMENT '评论内容',
+    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `deleted` TINYINT NOT NULL DEFAULT 0 COMMENT '删除标记',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_activity_user` (`activity_id`, `user_id`),
+    KEY `idx_activity_id` (`activity_id`),
+    KEY `idx_user_id` (`user_id`),
+    KEY `idx_member_id` (`member_id`),
+    KEY `idx_rating` (`rating`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='活动评论表';
