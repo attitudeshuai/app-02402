@@ -75,6 +75,12 @@ public class ActivityVO {
     @Schema(description = "是否已签到（当前用户）")
     private Boolean checkedIn;
 
+    @Schema(description = "评论数")
+    private Integer commentCount;
+
+    @Schema(description = "平均评分")
+    private Double averageRating;
+
     /**
      * 获取状态名称
      */
