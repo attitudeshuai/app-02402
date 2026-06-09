@@ -60,7 +60,14 @@ public enum ResultCode {
     REFUND_FAILED(1304, "退款失败"),
 
     // 公告相关 14xx
-    NOTICE_NOT_FOUND(1401, "公告不存在");
+    NOTICE_NOT_FOUND(1401, "公告不存在"),
+
+    // 活动评论 15xx
+    REVIEW_ALREADY_EXISTS(1501, "已评论过该活动"),
+    REVIEW_NOT_FOUND(1502, "评论不存在"),
+    REVIEW_NOT_ALLOWED(1503, "活动未结束，无法评论"),
+    REVIEW_NOT_ENROLLED(1504, "未参加该活动，无法评论"),
+    REVIEW_NOT_OWNER(1505, "只能编辑自己的评论");
 
     /**
      * 状态码
